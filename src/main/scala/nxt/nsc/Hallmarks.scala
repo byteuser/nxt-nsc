@@ -1,8 +1,7 @@
 package nxt.nsc
 
 import play.api.libs.json.Json
-import scala.collection.immutable.HashMap
-import scala.reflect.io.File
+
 import scala.util.{Success, Try}
 import scalaj.http._
 
@@ -20,11 +19,11 @@ object Hallmarks {
         ) / 24
     }
     val peersAccountInfo = peersAccountToReps.map(_.map { case (account, reps) => PeerAccountInfo(account, getBalance(account).getOrElse(0), reps)})
-    val peersEarnings = peersAccountInfo.map(x => HashMap(x.map(pai => pai.account -> pai.earnings).toSeq: _*))
-    val previousPeersEarnings = Try(HashMap(Json.parse(scala.io.Source.fromFile(databaseFilename).mkString).as[Map[String, Double]].toSeq: _*)).getOrElse(HashMap())
-    val newPeersEarnings = peersEarnings.map(_.merged(previousPeersEarnings)({ case ((k, v1), (_, v2)) => (k, v1 + v2)}))
+    val peersEarnings = peersAccountInfo.map(x => x.map(pai => pai.account -> pai.earnings).toMap.toHashMap)
+    val previousPeersEarnings = loadDatabase(peersDatabaseFilename)
+    val newPeersEarnings = for {pe <- peersEarnings; ppe <- previousPeersEarnings} yield mergeDatabases(pe, ppe)
     val newPeersEarningsAsDatabase = newPeersEarnings.map(x => Json.toJson[Map[String, Double]](x)).map(Json.prettyPrint)
-    newPeersEarningsAsDatabase.map(json => File(databaseFilename).writeAll(json)) match {
+    newPeersEarningsAsDatabase.map(saveDatabase(peersDatabaseFilename)) match {
       case Success(_) => println("Completed successfully")
       case e => println(e)
     }
