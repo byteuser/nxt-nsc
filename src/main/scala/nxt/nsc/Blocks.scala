@@ -15,17 +15,17 @@ object Blocks {
     val blocksInfo = (args(0).toLong until args(1).toLong).map(getBlockInfo)
     val forgersInfo = blocksInfo.foldLeft[Try[Forgers]] {
       Try(Forgers(
-        Seq("1460178482", "18128435238506025212", "7114946486381367146").map(_ -> 0).toMap,
+        Seq("NXT-K5KL-23DJ-3XLK-22222", "NXT-8N9W-TN4F-YA2S-H5B7R", "NXT-TMVC-69YC-SJB4-8YCH7").map(_ -> 0).toMap,
         Map[String, Set[Long]]().withDefault(_ => Set[Long]())))
     } { (f, b) =>
       for {
         forgers <- f
         blockInfo <- b()
       } yield {
-        if (forgers.pools.contains(blockInfo.generator))
-          forgers.copy(pools = forgers.pools.updated(blockInfo.generator, forgers.pools(blockInfo.generator) + 1))
+        if (forgers.pools.contains(blockInfo.generatorRS))
+          forgers.copy(pools = forgers.pools.updated(blockInfo.generatorRS, forgers.pools(blockInfo.generatorRS) + 1))
         else
-          forgers.copy(users = forgers.users.updated(blockInfo.generator, forgers.users(blockInfo.generator) + (blockInfo.timestamp / (24 * 60 * 60))))
+          forgers.copy(users = forgers.users.updated(blockInfo.generatorRS, forgers.users(blockInfo.generatorRS) + (blockInfo.timestamp / (24 * 60 * 60))))
       }
     }
     val newForgersEarnings = forgersInfo.map(_.aggregate)
@@ -42,6 +42,6 @@ object Blocks {
     () => response.map(Json.parse).map(_.as[BlockInfo])
   }
 
-  case class BlockInfo(generator: String, timestamp: Long)
+  case class BlockInfo(generatorRS: String, timestamp: Long)
 
 }

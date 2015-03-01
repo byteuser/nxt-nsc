@@ -36,7 +36,7 @@ object Hallmarks {
 
   def getAccountByHallmark(hallmark: String): Try[String] = {
     val response = Try(Http("http://localhost:7876/nxt").params(Map("requestType" -> "decodeHallmark", "hallmark" -> hallmark)).asString.body)
-    response.map(Json.parse).map(_ \ "account").map(_.as[String])
+    response.map(Json.parse).map(_ \ "accountRS").map(_.as[String])
   }
 
   def getPeersHallmarks(acceptedVersions: List[String]): Try[List[String]] = {
