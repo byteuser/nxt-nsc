@@ -3,7 +3,7 @@ package nxt.nsc
 import play.api.libs.json.Json
 
 import scala.util.{Success, Try}
-import scalaj.http._
+import scalaj.http.Http
 
 object Blocks {
   // Pass start and end block numbers as params

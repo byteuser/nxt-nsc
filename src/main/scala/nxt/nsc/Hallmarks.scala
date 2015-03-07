@@ -3,7 +3,7 @@ package nxt.nsc
 import play.api.libs.json.Json
 
 import scala.util.{Success, Try}
-import scalaj.http._
+import scalaj.http.Http
 
 object Hallmarks {
   // Pass accepted versions as params
@@ -22,7 +22,7 @@ object Hallmarks {
     val peersEarnings = peersAccountInfo.map(x => x.map(pai => pai.account -> pai.earnings).toMap.toHashMap)
     val previousPeersEarnings = loadDatabase(peersDatabaseFilename)
     val newPeersEarnings = for {pe <- peersEarnings; ppe <- previousPeersEarnings} yield mergeDatabases(pe, ppe)
-    val newPeersEarningsAsDatabase = newPeersEarnings.map(x => Json.toJson[Map[String, Double]](x)).map(Json.prettyPrint)
+    val newPeersEarningsAsDatabase = newPeersEarnings.map(convertDatabase)
     newPeersEarningsAsDatabase.map(saveDatabase(peersDatabaseFilename)) match {
       case Success(_) => println("Completed successfully")
       case e => println(e)
