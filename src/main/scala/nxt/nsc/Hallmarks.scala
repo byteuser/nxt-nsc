@@ -40,7 +40,7 @@ object Hallmarks {
   }
 
   def getPeersHallmarks(acceptedVersions: List[String]): Try[List[String]] = {
-    val response = Try(Http("http://localhost:7876/nxt").params(Map("requestType" -> "getPeers", "includePeerInfo" -> "true")).asString.body)
+    val response = Try(Http("http://localhost:7876/nxt").params(Map("requestType" -> "getPeers", "active" -> "true", "includePeerInfo" -> "true")).asString.body)
     implicit val peerInfoReads = Json.reads[PeerInfo]
     val peers = response.map(Json.parse).map(_ \ "peers").map(_.as[List[PeerInfo]])
     val recentPeers = peers.map(_.filter(_.version match {
