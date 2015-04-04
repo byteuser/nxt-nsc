@@ -27,7 +27,7 @@ object Payouts {
       case d if d > lowerBound => d - Math.floor(d)
       case d => d
     })
-    for {p <- payouts; npe <- newPeersEarnings} yield (p, npe)
+    for {p <- payouts; npe <- newPeersEarnings} yield (p, npe.filter(_._2 > 0.0))
   }
 
   def pay(account: String, sum: Long, secretPhrase: String): Try[HttpResponse[String]] = {
