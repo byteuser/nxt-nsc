@@ -8,7 +8,6 @@ import scala.util.Try
 
 package object nsc {
   val peersDatabaseFilename = "peers.nsc.db.json"
-  val forgersDatabaseFilename = "forgers.nsc.db.json"
   val payoutsDatabaseFilename = "payouts.nsc.db.json"
 
   implicit class MapExtensions[A, B](map: Map[A, B]) {
